@@ -6,12 +6,18 @@
 #include <iomanip>
 #include <cmath>
 #include <cstdlib>
+#include <QApplication>
+#include <QMainWindow>
+#include <QPushButton>
+#include <QLabel>
+#include <QLineEdit>
+#include <QSpinBox>
+#include <QInputDialog>
+#include <QMessageBox>
 
 using namespace std;
 
-
-class topic
-{
+class topic {
 public:
     string name;
     int count=0;
@@ -20,14 +26,10 @@ public:
     double time;
     int weightage;
     int imp;
-
 };
 
-
-class subject
-{
+class subject {
 public:
-
 string sname;
      topic c[50];
     int credits;
@@ -45,128 +47,81 @@ string sname;
     double lrate;
     float pptime;
     float rtime;
-
-
 };
+
 void printJobScheduling(subject arr[], int n);
 
 double fractionalKnapsack(int W, topic arr[], int n);
 
-bool cmp(topic a, topic b)
-{
+bool cmp(topic a, topic b) {
     double r1 = (double)a.priority / a.time;
     double r2 = (double)b.priority / b.time;
     return r1 > r2;
 }
 
-bool cmpsub(subject a,subject b)
-{
+bool cmpsub(subject a,subject b) {
     return (a.credits<b.credits);
-
 }
-bool cmpDate(subject s1,subject s2)
-{
+
+bool cmpDate(subject s1,subject s2) {
     return s1.time_left<s2.time_left;
-
 }
 
-
-bool cmpDiff(topic a,topic b)
-{
+bool cmpDiff(topic a,topic b) {
     return (a.difficulty<b.difficulty);
-
 }
-bool cmpImp(topic a,topic b)
-{
+
+bool cmpImp(topic a,topic b) {
     return (a.imp<b.imp);
-
 }
 
-
-
-bool comparison(subject a, subject b)
-{
+bool comparison(subject a, subject b) {
      return (a.imp > b.imp);
 }
 
-
-
-void printJobScheduling(subject arr[], int n)
-{
-
+void printJobScheduling(subject arr[], int n) {
     sort(arr, arr+n, comparison);
-
-
     for (int i=0;i<n;i++) {
     	cout<<"\n"<<i+1<<") "<<arr[i].sname;              // updated the function and it works correctly now(  error RTE before user feedback()  )
 	}
 	cout<<"\n";
-
     int result[n];
     bool slot[n];
-
-
     for (int i=0; i<n; i++)
         slot[i] = false;
-
-
-    for (int i=0; i<n; i++)
-    {
-
-
-       for (int j=min(n, arr[i].time_left)-1; j>=0; j--)
-       {
-
-          if (slot[j]==false)
-          {
+    for (int i=0; i<n; i++) {
+       for (int j=min(n, arr[i].time_left)-1; j>=0; j--) {
+          if (slot[j]==false) {
              result[j] = i;  // Add this job to result
              slot[j] = true; // Make this slot occupied
              break;
           }
        }
     }
-
-
-    for (int i=n-1; i>=0; i--)
-      {
-          if (slot[i])
-		  {
+    for (int i=n-1; i>=0; i--) {
+          if (slot[i]) {
 		      cout << arr[result[i]].sname << "\n";
           }
       }
-
 }
 
-
-
-double fractionalKnapsack(float W, topic arr[], int n)
-{
+double fractionalKnapsack(float W, topic arr[], int n) {
      sort(arr, arr + n, cmp);
-
-
     int curMarks = 0;  // Current weight in knapsack
     double finalvalue = 0.0; // Result (value in Knapsack)
-
-     for (int i = 0; i < n; i++)
-    {
-         if (curMarks + arr[i].time <= W)
-        {
+     for (int i = 0; i < n; i++) {
+         if (curMarks + arr[i].time <= W) {
             curMarks += arr[i].time;
             finalvalue += arr[i].weightage;
-           if(arr[i].count==0)
-            {
+           if(arr[i].count==0) {
                  cout<<"\n--------------------------------"<<endl;
                  cout<<"For "<<arr[i].name<<": "<<endl;
-
-
             }
-           if(arr[i].count==1)
-            {
+           if(arr[i].count==1) {
            float trev=arr[i].time/2;
             float tpaper=arr[i].time/4;
             float tdoubts=arr[i].time/4;
-           if(trev<1)
-           {
+           if(trev<1) {
                trev*=60;
                tpaper*=60;
                tdoubts*=60;
@@ -176,11 +131,7 @@ double fractionalKnapsack(float W, topic arr[], int n)
            cout<<"Do not forget to take a look at last year questions for this topic in the next "<<tpaper<<" minutes"<<endl;
            //cout<<"\n------------------------------------------------------------------------------------"<<endl;
            cout<<"Try to clear your doubts about this topic in the next "<<tdoubts<<" minutes"<<"\n"<<endl;
-
-           }
-
-           else if((tpaper<1)&&(trev>=1))
-           {
+           } else if((tpaper<1)&&(trev>=1)) {
                tpaper*=60;
                tdoubts*=60;
            //cout<<"\n------------------------------------------------------"<<endl;
@@ -189,35 +140,29 @@ double fractionalKnapsack(float W, topic arr[], int n)
            cout<<"Do not forget to take a look at last year questions for this topic in the next "<<tpaper<<" minutes"<<endl;
            //cout<<"\n------------------------------------------------------------------------------------"<<endl;
            cout<<"Try to clear your doubts about this topic in the next "<<tdoubts<<" minutes"<<"\n"<<endl;
-           }
-
-            else
-           {
+           } else {
            //cout<<"\n------------------------------------------------------"<<endl;
            cout<<"You can revise the topic "<<arr[i].name<< " in "<<trev<<" hours"<<endl;
            //cout<<"\n-----------------------------------------------------------------------------------------------"<<endl;
            cout<<"Do not forget to take a look at last year questions for this topic in the next "<<tpaper<<" hours"<<endl;
            cout<<"\n------------------------------------------------------------------------------------"<<endl;
-           cout<<"Try to clear your doubts about this topic in the next "<<tdoubts<<" hours"<<"\n"<<endl;}
-
-            }
-        }
-
-         else
-        {
+           cout<<"Try to clear your doubts about this topic in the next "<<tdoubts<<" hours"<<"\n"<<endl;
+           }
+         }
+       } else {
             int remain = W - curMarks;
             finalvalue += arr[i].weightage * ((double) remain / arr[i].time);
             cout<<"You can only do some part of the chapter"<<endl;
             break;
         }
-    if(curMarks>=W){return 0.0;}
+    if(curMarks>=W) {
+      return 0.0;
     }
-
-     return finalvalue;
+   }
+    return finalvalue;
 }
 
-
-void user_feedback(){
+void user_feedback() {
     int ratings;
     cout<<"----------------------------------------------------------------------------------";
     cout<<"\nPlease give us a feedback on the basis of the preparation schedule provided to you:\nRate us out of 5 where 1 symbolises lowest"<<endl;
@@ -226,21 +171,13 @@ void user_feedback(){
     cout<<"|Thank You!:D|"<<endl;
     cout<<"**************"<<endl;
 }
-
 /*
-
 end
-
 COMPLETE FOR 1 SUBJECT
-
-
  */
 
-
-
-
-
-int main() {
+int main(int argc,char *argv[]) {
+    QApplication app(argc,argv);
     int option;
     cout << "\033[2J\033[1;1H";
     system("osascript -e 'display alert \"Learning Made Easy\" message \"Optimizer Engine Loaded. Click OK to begin scheduling.\" buttons {\"OK\"} default button \"OK\"'");
@@ -259,33 +196,23 @@ int main() {
     cout <<"                  |_________________________________________________________________________|"<<endl;
     cout << "\nEnter your required option: ";
     cin >> option;
-    if (option == 1)
-
-    {
+    if (option == 1) {
         int n;
         cout << "---------------------------"<<endl;
         cout << "Enter the no. of topics: ";
         cin >> n;
-
         int total_diff = 0; // sp
-
         topic t[2 * n];
         cout << "----------------------------"<<endl;
         cout << "Enter name of each topic: "<<endl;
-
-        for (int i = 0; i < n; i++)
-        {
+        for (int i = 0; i < n; i++) {
             cout<< "Topic "<<i+1<<": ";
             cin >> t[i].name;
         }
         cout << "----------------------------------------------------------";
         cout << "\nEnter priority of each topic i.e. expected weightage: "<<endl;
         cout << "'From 1-10_____1 being the easiest:' "<<endl;
-
-
-        for (int i = 0; i < n; i++)
-        {
-
+        for (int i = 0; i < n; i++) {
             cout <<"For " <<t[i].name << " : ";
             cin >> t[i].priority;
             t[i].weightage = t[i].priority;
@@ -294,14 +221,11 @@ int main() {
         cout << "-------------------------------------------------------"<<endl;
         cout << "Enter difficulty level of each topic according to you"<<endl;
         cout << "'From 1-10_____1 being the easiest:' "<<endl;
-
-        for (int i = 0; i < n; i++)
-        {
+        for (int i = 0; i < n; i++) {
             cout <<"For " <<t[i].name << " : ";
             cin >> t[i].difficulty;
             total_diff = total_diff + t[i].difficulty;
         }
-
         total_diff = total_diff + total_diff / 2;
          cout<<endl;
         int total_time;   // tt
@@ -319,39 +243,30 @@ int main() {
         cout << "\nDifficulty Level: " << total_diff << "\n";
         float utilised_val = available_time / total_diff; //ut
         cout << "\nTime Utilization rate: " << utilised_val << "\n";
-
-        for (int i = 0; i < n; i++)
-        {
+        for (int i = 0; i < n; i++) {
             t[i].time = utilised_val * t[i].difficulty / 10;
             //cout << t[i].name << " " << t[i].time * 10 << "\n";
         }
-
         int checksub;
        // cout << "The time is: ";
         cout << "\n-------------------------------------------------------------------------------";
         cout << "\nPlease check if you will be able to complete the topics in the given time: "<<endl;
-        for (int i = 0; i < n; i++)
-        {
+        for (int i = 0; i < n; i++) {
             cout <<"For " <<t[i].name << ": " << t[i].time*10 <<" hours" <<"\n";
         }
         cout<<"\n--------------------------------------";
         cout<<"\nIf you are okay press 1 else press 0"<<endl;
         cout<<"Enter your choice: ";
         cin >> checksub;
-
-        if (checksub == 0)
-        {
+        if (checksub == 0) {
             cout <<"\n----------------------------------"<<endl;
             cout << "You can enter the time manually: ";
-            for (int i = 0; i < n; i++)
-            {
+            for (int i = 0; i < n; i++) {
                 cout<<"For Topic "<<i+1<<": ";
                 cin >> t[i].time;
             }
         }
-
-        for (int i = n; i < 2 * n; i++)
-        {
+        for (int i = n; i < 2 * n; i++) {
             t[i].name = t[i - n].name;
             t[i].priority = t[i - n].priority / 2;
             t[i].weightage = 0;
@@ -359,23 +274,13 @@ int main() {
             t[i].time = t[i - n].time / 2.0;
             t[i].count = 1;
         }
-
-
         //                (value,weight)----(priority,time)
-
         //                 capacity-tt
-
         //revision of each subject has a priority and time half of the subject
-
         double prepared = fractionalKnapsack(available_time, t, 2 * n);
-
        // cout << prepared; *No NEED*
        // return 0; *This Statement Stops the calling the feedback function*
-    }
-
-    else if (option == 2)
-
-    {
+    } else if (option == 2) {
         int n;
         cout<<  "----------------------------------";
         cout << "\nEnter Total Number of subjects: ";
@@ -386,8 +291,7 @@ int main() {
         int tcred = 0;
         cout<<  "----------------------------------------------------------"<<endl;
         cout << "Please Enter the Name and Credit points for each subject: \n"<<endl; ;
-        for (int i = 0; i < n; i++)
-        {
+        for (int i = 0; i < n; i++) {
             cout<<"\nEnter the NAME for subject number- "<<i+1<<": ";
             cin >> s[i].sname ;
             cout<<"\nEnter the CREDIT POINTS for subject number- "<<i+1<<": ";
@@ -395,33 +299,26 @@ int main() {
             tcred += s[i].credits;
         }
         cout<<" \n"<<endl;
-
         //int date;
-
         //cout << "Enter today's date(Format: dd): ";
         //cin >> date;
-
         int tgive;
         cout<<  "--------------------------------------------------------------";
         cout << "\nHow much time can you give each day to studies(in hours): ";
         cin >> tgive;
         cout<<  "--------------------------------------------------------------";
         cout << "\nEnter number of days you can give for the following exams\n"<<endl;
-
-        for (int i = 0; i < n; i++)
-        {
+        for (int i = 0; i < n; i++) {
             cout << s[i].sname << ":";
             cin >> s[i].examdate;
             s[i].time_left = s[i].examdate;
             s[i].ttime = s[i].time_left * tgive;
             cout<<endl;
         }
-
        // int ttime = s[0].time_left * tgive;
         cout<<  "----------------------------------------------------";
         cout << "\nWhat is your preparation level rate it from 1-10? \n10 being highest and 1 being the lowest: \n"<<endl;
-        for(int i=0;i<n;i++)
-        {
+        for(int i=0;i<n;i++) {
             cout << "For "<< s[i].sname << ": ";
             cin >> s[i].prep;
             s[i].prepp=100*s[i].prep/10;
@@ -430,16 +327,12 @@ int main() {
         cout<<endl;
         cout<<  "---------------------------------------------------------------";
         cout << "\nHow much time did you took for doing that preparation(in hours)"<<endl;
-        for(int i=0;i<n;i++)
-        {
+        for(int i=0;i<n;i++) {
             cout << "For "<< s[i].sname << ": ";
             cin>> s[i].pptime;
         }
         int timp = 0;
-
-        for (int i = 0; i < n; i++)
-        {
-
+        for (int i = 0; i < n; i++) {
             s[i].lrate=s[i].pptime/s[i].prepp ;
             //cout<<"Learning Rate= "<<s[i].lrate<<endl;
             s[i].imp = s[i].credits / ((s[i].prep) * (s[i].time_left));
@@ -447,14 +340,9 @@ int main() {
             timp += s[i].imp;
             s[i].rtime = (100-s[i].prepp)*s[i].lrate;;
             s[i].stime = s[i].credits * s[i].ttime/ s[i].prep;
-
             s[i].rtime = s[i].rtime + (s[i].stime/2);
-
                 s[i].atime=s[i].ttime;
-
-
             cout<<endl;
-
            // cout<<"Subject Name: "<<s[i].sname<<"Subject Credit: "<<s[i].credits<<" "<<s[i].profit<<"Required Time "<<s[i].stime<<" "<<s[i].prep<<" "<<s[i].time_left<<endl;
         }
         //cout << "Complete the subjects in the following sequence to maximize your percentage: \n ";
@@ -462,9 +350,7 @@ int main() {
         cout<<"\n\t___________________________________________________________________________________"<<endl;
         cout<<setw(20)<<"Subject Name"<<setw(20)<<"Subject Credit"<<setw(25)<<"Required Time(hrs)"<<setw(25)<<"Available Time(hrs)";
         cout<<"\n\t-----------------------------------------------------------------------------------";
-        for(int i=0;i<n;i++)
-        {
-
+        for(int i=0;i<n;i++) {
             cout<<"\n\t___________________________________________________________________________________";
             cout<<"\n"<<setw(20)<<s[i].sname<<setw(15)<<s[i].credits<<setw(22)<<round(s[i].rtime)<<setw(22)<<round(s[i].atime);
             cout<<"\n\t___________________________________________________________________________________";
@@ -474,28 +360,19 @@ int main() {
        cout<<"\nAccording to our algorithm the priority should be as follows"<<endl;
         printJobScheduling(s, n);
     }
-
     //mixed scheduling of all subjects
-
-    else if (option == 3)
-    {
-
+    else if (option == 3) {
         int ask;
-
         //do all difficult chapters together
         int n;
         cout << "\n---------------------------"<<endl;
         cout << "Enter total no. subjects: ";
         cin >> n;
-
         subject s[n];
-
         int ttopic = 0;
         cout << "\n-------------------------------------------------------------------------------"<<endl;
         cout << "Enter name of each Subject, their Credits & Number of Topics in each Subject: ";
-
-        for (int i = 0; i < n; i++)
-        {
+        for (int i = 0; i < n; i++) {
             cout<<"\n---------------";
             cout<<"\nNumber: "<<i+1<<endl;
             cout<<"Subject Name: ";
@@ -508,31 +385,21 @@ int main() {
             ttopic += s[i].topics;
         }
         cout << "\n";
-
         sort(s, s + n, cmpsub);
-
         //cout<<"sorted on basis of course credits";
-
         //cout<<"ttopic is"<<ttopic;
         /*
-    for(int i=0;i<n;i++)
-    {
+    for(int i=0;i<n;i++) {
         cout<<s[i].sname<<"\n";
         cout<<s[i].topics<<"\n";}*/
-
         topic it[ttopic * n];
         int y = 0;
             cout << "\n-----------------------------------------------------------------------------------------------"<<endl;
-        for (int i = 0; i < n; i++)
-        {
-
+        for (int i = 0; i < n; i++) {
             cout << "Enter the name of each Topic with its importance in exam and Difficulty level according to you."<<endl;
             cout << "From 1-10_____1 being the easiest for the subject"<<endl;
-
             cout <<"For "<< s[i].sname << ": "<<endl;
-
-            for (int j = 0; j < s[i].topics; j++)
-            {
+            for (int j = 0; j < s[i].topics; j++) {
                 cout<<"\n-------------------"<<endl;
                 cout<<"Topic Number: "<<j+1<<endl;
                 cout<<"Topic Name: ";
@@ -542,48 +409,31 @@ int main() {
                 cout<<"Topic difficulty: ";
                 cin >> it[y].difficulty;
                 cout<<endl;
-
                 it[y].imp = it[y].weightage * s[i].credits * it[y].difficulty;
-
                 y++;
             }
         }
-
         cout << "\n----------------------------------------------------------------------------------------"<<endl;
         cout << "Do you want to do major chapters first ( press 1 ) or the most difficult ones (press 0)? ";
         cin >> ask;
-
-        if (ask == 0)
-        {
-
+        if (ask == 0) {
             //sort on the basis of difficulty
             sort(it, it + (n * ttopic), cmpDiff);
             cout << "\n----------------------------------------------------"<<endl;
             cout << "Sorted by difficulty in each topic faced by you:\n";
-
-            for (int i = (n * ttopic) - 1; i >= 0; i--)
-            {
-
+            for (int i = (n * ttopic) - 1; i >= 0; i--) {
                 cout << it[i].name << "\n";
             }
-        }
-        else if (ask == 1)
-        {
+        } else if (ask == 1) {
             //sort on the basis of importance
-
             sort(it, it + (n * ttopic), cmpImp);
             cout << "\n----------------------------------------------------"<<endl;
             cout << "Sorted by importance of each subject in exam: ";
-
-            for (int i = (n * ttopic) - 1; i >= 0; i--)
-            {
-
+            for (int i = (n * ttopic) - 1; i >= 0; i--) {
                 cout << it[i].name << "\n";
             }
         }
-    }
-    else
-    {
+    } else {
     	cout<<"\n-----------------------------------------"<<endl;
     	cout<<"The Option Number you chose is not their"<<endl;
     	cout<<"\n-------------------------------------"<<endl;
