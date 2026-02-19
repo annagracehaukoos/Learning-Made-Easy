@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <vector>
 #include <string>
@@ -14,8 +13,29 @@
 #include <QSpinBox>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QProgressBar>
+#include <QTimer>
+#include <QVBoxLayout>
+#include <QPalette>
+#include <QPixmap>
+#include <QTableWidget>
+#include <QHeaderView>
+#include <QTableWidgetItem>
+#include <QDir>
+#include <QCoreApplication>
 
 using namespace std;
+
+class MainMenuWindow;
+class MainWindow;
+
+class MainMenuWindow : public QWidget {
+  Q_OBJECT
+  public:
+    explicit MainMenuWindow(QWidget *parent = nullptr);
+  protected:
+    void resizeEvent(QResizeEvent *event) override;
+};
 
 class topic {
 public:
@@ -176,121 +196,121 @@ end
 COMPLETE FOR 1 SUBJECT
  */
 
-int main(int argc,char *argv[]) {
-    QApplication app(argc,argv);
-    int option;
-    cout << "\033[2J\033[1;1H";
-    system("osascript -e 'display alert \"Learning Made Easy\" message \"Optimizer Engine Loaded. Click OK to begin scheduling.\" buttons {\"OK\"} default button \"OK\"'");
-    cout <<"                  ___________________________________________________________________________"<<endl;
-    cout <<"                  |                               WELCOME TO                                |"<<endl;
-    cout <<"                  |                                                                         |"<<endl;
-    cout <<"                  |                           LEARNING MADE EASY                            |"<<endl;
-    cout <<"                  |                                                                         |"<<endl;
-    cout <<"                  |                                  MENU                                   |"<<endl;
-    cout <<"                  |                                                                         |"<<endl;
-    cout <<"                  | 1 to schedule a given subject in limited time                           |"<<endl;
-    cout <<"                  | 2 to schedule studies for all subjects for a long period of time        |"<<endl;
-    cout <<"                  | 3 for mixed schedule of all subjects(if you have enough time)           |"<<endl;
-    cout <<"                  |                                                                         |"<<endl;
-    cout <<"                  |                                                                         |"<<endl;
-    cout <<"                  |_________________________________________________________________________|"<<endl;
-    cout << "\nEnter your required option: ";
-    cin >> option;
-    if (option == 1) {
-        int n;
-        cout << "---------------------------"<<endl;
-        cout << "Enter the no. of topics: ";
-        cin >> n;
-        int total_diff = 0; // sp
-        topic t[2 * n];
-        cout << "----------------------------"<<endl;
-        cout << "Enter name of each topic: "<<endl;
-        for (int i = 0; i < n; i++) {
-            cout<< "Topic "<<i+1<<": ";
-            cin >> t[i].name;
-        }
-        cout << "----------------------------------------------------------";
-        cout << "\nEnter priority of each topic i.e. expected weightage: "<<endl;
-        cout << "'From 1-10_____1 being the easiest:' "<<endl;
-        for (int i = 0; i < n; i++) {
-            cout <<"For " <<t[i].name << " : ";
-            cin >> t[i].priority;
-            t[i].weightage = t[i].priority;
-            t[i].count = 0;
-        }
-        cout << "-------------------------------------------------------"<<endl;
-        cout << "Enter difficulty level of each topic according to you"<<endl;
-        cout << "'From 1-10_____1 being the easiest:' "<<endl;
-        for (int i = 0; i < n; i++) {
-            cout <<"For " <<t[i].name << " : ";
-            cin >> t[i].difficulty;
-            total_diff = total_diff + t[i].difficulty;
-        }
-        total_diff = total_diff + total_diff / 2;
-         cout<<endl;
-        int total_time;   // tt
-        int focused_time; // eff
-        cout << "--------------------------------------------------------------"<<endl;
-        cout << "\nEnter total time available to study this subject in hours: ";
-        cin >> total_time;
-        cout << "\n-----------------------------------------------------------------------"<<endl;
-        cout << "How much you can resist yourself from using phone during exams?(1-10): ";
-        cin >> focused_time;
-        cout<<"\n";
-        float available_time = total_time * focused_time / 10; //at
-        cout << "---------------------------"<<endl;
-        cout << "Total Allotted time: " << available_time << "\n";
-        cout << "\nDifficulty Level: " << total_diff << "\n";
-        float utilised_val = available_time / total_diff; //ut
-        cout << "\nTime Utilization rate: " << utilised_val << "\n";
-        for (int i = 0; i < n; i++) {
-            t[i].time = utilised_val * t[i].difficulty / 10;
-            //cout << t[i].name << " " << t[i].time * 10 << "\n";
-        }
-        int checksub;
-       // cout << "The time is: ";
-        cout << "\n-------------------------------------------------------------------------------";
-        cout << "\nPlease check if you will be able to complete the topics in the given time: "<<endl;
-        for (int i = 0; i < n; i++) {
-            cout <<"For " <<t[i].name << ": " << t[i].time*10 <<" hours" <<"\n";
-        }
-        cout<<"\n--------------------------------------";
-        cout<<"\nIf you are okay press 1 else press 0"<<endl;
-        cout<<"Enter your choice: ";
-        cin >> checksub;
-        if (checksub == 0) {
-            cout <<"\n----------------------------------"<<endl;
-            cout << "You can enter the time manually: ";
-            for (int i = 0; i < n; i++) {
-                cout<<"For Topic "<<i+1<<": ";
-                cin >> t[i].time;
-            }
-        }
-        for (int i = n; i < 2 * n; i++) {
-            t[i].name = t[i - n].name;
-            t[i].priority = t[i - n].priority / 2;
-            t[i].weightage = 0;
-            t[i].difficulty = t[i - n].difficulty / 2;
-            t[i].time = t[i - n].time / 2.0;
-            t[i].count = 1;
-        }
-        //                (value,weight)----(priority,time)
-        //                 capacity-tt
-        //revision of each subject has a priority and time half of the subject
-        double prepared = fractionalKnapsack(available_time, t, 2 * n);
-       // cout << prepared; *No NEED*
-       // return 0; *This Statement Stops the calling the feedback function*
-    } else if (option == 2) {
-        int n;
+MainMenuWindow::MainMenuWindow(QWidget *parent) : QWidget(parent) {
+    setWindowTitle("WELCOME TO LEARNING MADE EASY");
+    resize(500, 500);
+    QPixmap bg("Books_HD_(8314929977).jpg");
+    if (!bg.isNull()) {
+        QPalette palette;
+        palette.setBrush(QPalette::Window, bg.scaled(this->size(), Qt::KeepAspectRatioByExpanding));
+        setAutoFillBackground(true);
+        setPalette(palette);
+    }
+    auto *layout = new QVBoxLayout(this);
+    layout->setContentsMargins(40, 40, 40, 40);
+    QLabel *title = new QLabel("<h2>WELCOME TO LEARNING MADE EASY</h2>", this);
+    title->setAlignment(Qt::AlignCenter);
+    title->setStyleSheet("color: #3e2c27; font-weight: 900; font-size: 34px;");
+    QLabel *subtitle = new QLabel("<i>MENU</i>", this);
+    subtitle->setAlignment(Qt::AlignCenter);
+    subtitle->setStyleSheet("color: #3e2c27; font-size: 17px; font-weight: 600; margin-bottom: 15px;");
+    layout->addWidget(title, 0, Qt::AlignCenter);
+    layout->addWidget(subtitle, 0, Qt::AlignCenter);
+    layout->addStretch();
+    QStringList options = {
+        "1. Schedule a given subject in limited time",
+        "2. Schedule studies for all subjects for a long period of time",
+        "3. Create a mixed schedule of all subjects (if you have enough time)"
+    };
+    for (const auto& option : options) {
+        auto *btn = new QPushButton(option, this);
+        btn->setStyleSheet("font-weight:bold; font-size:15px; color:#f8e5c0; background-color:#3e2c27; border-radius:8px; padding:10px;");
+        btn->setCursor(Qt::PointingHandCursor);
+        layout->addWidget(btn);
+        connect(btn, &QPushButton::clicked, this, [this, option, options] {
+            if (option.contains("1.")) {
+                bool ok;
+                int n = QInputDialog::getInt(this, "Input", "Enter the no. of topics: ", 1, 1, 50, 1, &ok);
+                if (!ok) return;
+                vector<topic> t(2 * n);
+                int total_diff = 0;
+                for (int i = 0; i < n; i++) {
+                    QString name = QInputDialog::getText(this, "Input", "Enter name of each topic: " + QString::number(i + 1) + "Topic: ", QLineEdit::Normal, "", &ok);
+                    if (!ok) return;
+                    t[i].name = name.toStdString();
+                    t[i].priority = QInputDialog::getInt(this, "Input", "Enter priority of each topic i.e. expected weightage: \n'From 1-10_____1 being the easiest:' ", 5, 1, 10, 1, &ok);
+                    t[i].weightage = t[i].priority;
+                    t[i].difficulty = QInputDialog::getInt(this, "Input", "Enter difficulty level of each topic according to you\n'From 1-10_____1 being the easiest:' ", 5, 1, 10, 1, &ok);
+                    total_diff += t[i].difficulty;
+                }
+                total_diff = total_diff + total_diff / 2;
+                double total_time = QInputDialog::getDouble(this, "Input", "Enter total time available to study this subject in hours: ", 10.0, 1.0, 500.0, 1, &ok);
+                if (!ok) return;
+                int focused_time_val = QInputDialog::getInt(this, "Input", "How much you can resist yourself from using phone during exams?(1-10): ", 7, 1, 10, 1, &ok);
+                if (!ok) return;
+                float available_time = total_time * focused_time_val / 10.0;
+                float utilised_val = (total_diff > 0) ? (available_time / total_diff) : 0;
+                for (int i = 0; i < n; i++) {
+                    t[i].time = utilised_val * t[i].difficulty / 10.0;
+                }
+                QString statsMessage = QString(
+                    "<b>Optimization Summary:</b><br><br>"
+                    "Total Allotted Time: <b>%1 hours</b><br>"
+                    "Total Difficulty Level: <b>%2</b><br>"
+                    "Time Utilization Rate: <b>%3</b>")
+                    .arg(available_time, 0, 'f', 2)
+                    .arg(total_diff)
+                    .arg(utilised_val, 0, 'f', 4);
+                QMessageBox::information(this, "Summary", statsMessage);
+                QString preview = "Please check if you will be able to complete the topics in the given time:<br>";
+                for (int i = 0; i < n; i++) {
+                    preview += "For " + QString::fromStdString(t[i].name) + ": <b>" + QString::number(t[i].time * 10, 'f', 2) + " hours</b><br>";
+                }
+                QMessageBox::StandardButton reply = QMessageBox::question(this, "If you are okay click Yes else click No", preview, QMessageBox::Yes | QMessageBox::No);
+                if (reply == QMessageBox::No) {
+                    QMessageBox::information(this, "Manual Entry", "You can enter the time manually:");
+                    for (int i = 0; i < n; i++) {
+                        bool manualOk;
+                        double manualTime = QInputDialog::getDouble(this, "Input", "For Topic " + QString::number(i + 1) + ":", t[i].time * 10, 0.1, 24.0, 1, &manualOk);
+                        if (manualOk) t[i].time = manualTime / 10.0;
+                    }
+                }
+                for (int i = n; i < 2 * n; i++) {
+                    t[i].name = t[i - n].name + " Revision";
+                    t[i].time = t[i - n].time / 2.0;
+                    t[i].count = 1;
+                }
+                fractionalKnapsack(available_time, t.data(), 2 * n);
+                QDialog *resDlg = new QDialog(this);
+                resDlg->setWindowTitle("Final Schedule");
+                resDlg->resize(400, 300);
+                QVBoxLayout *resLayout = new QVBoxLayout(resDlg);
+                QTableWidget *table = new QTableWidget(2 * n, 2, resDlg);
+                table->setHorizontalHeaderLabels({"Activity", "Time (Hours)"});
+                for (int i = 0; i < 2 * n; i++) {
+                    table->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(t[i].name)));
+                    table->setItem(i, 1, new QTableWidgetItem(QString::number(t[i].time * 10, 'f', 2)));
+                }
+                table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+                resLayout->addWidget(table);
+                QPushButton *closeBtn = new QPushButton("Close", resDlg);
+                connect(closeBtn, &QPushButton::clicked, resDlg, &QDialog::accept);
+                resLayout->addWidget(closeBtn);
+                resDlg->exec();
+                }
+              //});
+         //}
+         if (options.contains("2.")) {
+            int n;
         cout<<  "----------------------------------";
         cout << "\nEnter Total Number of subjects: ";
         cin >> n;
         //cout<<  "----------------------------------";
         cout<<"\n"<<endl;
         subject s[n];
-        int tcred = 0;
         cout<<  "----------------------------------------------------------"<<endl;
         cout << "Please Enter the Name and Credit points for each subject: \n"<<endl; ;
+        int tcred = 0;
         for (int i = 0; i < n; i++) {
             cout<<"\nEnter the NAME for subject number- "<<i+1<<": ";
             cin >> s[i].sname ;
@@ -325,13 +345,13 @@ int main(int argc,char *argv[]) {
            // cout<<"Prep Percentage: "<<s[i].prepp<<endl;
             }
         cout<<endl;
+        int timp = 0;
         cout<<  "---------------------------------------------------------------";
         cout << "\nHow much time did you took for doing that preparation(in hours)"<<endl;
         for(int i=0;i<n;i++) {
             cout << "For "<< s[i].sname << ": ";
             cin>> s[i].pptime;
         }
-        int timp = 0;
         for (int i = 0; i < n; i++) {
             s[i].lrate=s[i].pptime/s[i].prepp ;
             //cout<<"Learning Rate= "<<s[i].lrate<<endl;
@@ -359,10 +379,8 @@ int main(int argc,char *argv[]) {
        cout<<"------------------------------------------------------------------";
        cout<<"\nAccording to our algorithm the priority should be as follows"<<endl;
         printJobScheduling(s, n);
-    }
-    //mixed scheduling of all subjects
-    else if (option == 3) {
-        int ask;
+          } else if (options.contains("3.")) {
+            int ask;
         //do all difficult chapters together
         int n;
         cout << "\n---------------------------"<<endl;
@@ -438,9 +456,61 @@ int main(int argc,char *argv[]) {
     	cout<<"The Option Number you chose is not their"<<endl;
     	cout<<"\n-------------------------------------"<<endl;
     	cout<<"Thank You! :)"<<endl;
-    	return 0;
-	}
-    user_feedback();
-    return 0;
+          }
+      });
+   }
 }
+
+class StartWindow : public QWidget {
+    Q_OBJECT
+    QProgressBar *bar = nullptr;
+    QTimer *timer = nullptr;
+    int progress = 0;
+public:
+    explicit StartWindow(QWidget *parent = nullptr) : QWidget(parent) {
+        setFixedSize(400, 200);
+        setWindowTitle("Start");
+        auto *layout = new QVBoxLayout(this);
+        QLabel *label = new QLabel("<b>Preparing your study environment...</b>");
+        label->setAlignment(Qt::AlignCenter);
+        bar = new QProgressBar(this);
+        bar->setRange(0, 100);
+        bar->setValue(0);
+        QPushButton *startBtn = new QPushButton("Begin Analysis", this);
+        layout->addWidget(label);
+        layout->addWidget(bar);
+        layout->addWidget(startBtn);
+        connect(startBtn, &QPushButton::clicked, this, &StartWindow::startGeneration);
+        timer = new QTimer(this);
+        connect(timer, &QTimer::timeout, this, &StartWindow::updateProgress);
+    }
+    private slots:
+      void startGeneration() {
+        timer->start(30);
+    }
+    void updateProgress() {
+        progress++;
+        bar->setValue(progress);
+        if (progress >= 100) {
+            timer->stop();
+            MainMenuWindow *mainWin = new MainMenuWindow();
+            mainWin->show();
+            this->close();
+        }
+    }
+};
+
+void MainMenuWindow::resizeEvent(QResizeEvent *event) {
+  QWidget::resizeEvent(event);
+}
+
+int main(int argc, char *argv[]) {
+    QApplication app(argc, argv);
+    QDir::setCurrent(QCoreApplication::applicationDirPath());
+    StartWindow* window = new StartWindow();
+    window->show();
+    return app.exec();
+ }
+
+#include "test-prep.moc"
 
